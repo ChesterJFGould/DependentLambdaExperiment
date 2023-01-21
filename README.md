@@ -8,5 +8,5 @@ Basically an implementation of the dependently typed lambda calculus I built to 
 4. Checkout the examples in the `examples/` directory. These def files can be loaded into the REPL using `:load <PATH>`.
 
 # TODO
-[] Add totality checker and guarentee types are total
-[] Unify defs, let expression, and command line `:let`
+- [ ] Add totality checker and guarentee types are total
+- [ ] Unify defs, let expression, and command line `:let`
