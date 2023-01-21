@@ -10,3 +10,4 @@ Basically an implementation of the dependently typed lambda calculus I built to 
 # TODO
 - [ ] Add totality checker and guarentee types are total
 - [ ] Unify defs, let expression, and command line `:let`
+- [ ] Give normalization semantics to letrec in semantics doc
