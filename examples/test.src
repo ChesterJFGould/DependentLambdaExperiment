@@ -1,0 +1,7 @@
+let compose =
+	\a : Type.
+	\b : Type.
+	\c : Type.
+	\f : /bv : b. c.
+	\g : /av : a. b.\x : a.
+		f (g x)

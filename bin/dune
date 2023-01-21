@@ -1,0 +1,6 @@
+(executable
+ (public_name dependent_lambda)
+ (name main)
+ (libraries lib opal camlp-streams)
+ (modes byte exe)
+ (flags -rectypes))

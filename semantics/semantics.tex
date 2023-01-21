@@ -1,0 +1,306 @@
+\documentclass{article}
+
+\usepackage[leqno]{amsmath}
+\usepackage{amsfonts}
+\usepackage{bussproofs}
+
+\begin{document}
+
+\section*{Terms}
+
+\begin{align}
+\tag*{Literals} l ::=& \; true \mid false \mid Bool \mid \mathbb{R} \mid Float \mid () \mid Unit \mid Type \mid \Box \\
+\tag*{Variables} v ::=& \; [a-z|A-Z][a-z|A-Z|1-9]* \\
+\tag*{Expressions} e,t,k ::=& \mid l \\
+\tag*{} & \mid v \\
+\tag*{} & \mid \lambda v : t. e \\
+\tag*{} & \mid \forall v : t. e \\
+\tag*{} & \mid e_f \; e_a \\
+\tag*{} & \mid if \; e_p \; then \; e_c \; else \; e_a \\
+\tag*{} & \mid let \; v \; = \; e_v \; in \; e_b \\
+\tag*{} & \mid letrec \;v \; : \; t \;  = e_v \; in \; e_b \\
+\tag*{} & \mid (e_l, e_r) \\
+\tag*{} & \mid e.L \\
+\tag*{} & \mid e.R \\
+\tag*{} & \mid e.R \\
+\tag*{} & \mid (t_l \land t_r) \\
+\tag*{} & \mid (e : t) \\
+\tag*{} & \mid (e)
+\end{align}
+
+\section*{Typing}
+\subsection*{Literals}
+
+\begin{center}
+
+  \AxiomC{}
+  \RightLabel{BLit}
+  \UnaryInfC{$\vdash true : Bool$}
+  \DisplayProof
+  \hskip 1.5em
+  \AxiomC{}
+  \RightLabel{BLit}
+  \UnaryInfC{$\vdash false : Bool$}
+  \DisplayProof
+  \hskip 1.5em
+  \AxiomC{}
+  \RightLabel{BTLit}
+  \UnaryInfC{$\vdash Bool : Type$}
+  \DisplayProof
+  \vskip 1.5em
+  \AxiomC{}
+  \RightLabel{FLit}
+  \UnaryInfC{$\vdash \mathbb{R} : Float$}
+  \DisplayProof
+  \hskip 1.5em
+  \AxiomC{}
+  \RightLabel{FTLit}
+  \UnaryInfC{$\vdash Float : Type$}
+  \DisplayProof
+  \\
+  \vskip 1.5em
+  \AxiomC{}
+  \RightLabel{ULit}
+  \UnaryInfC{$\vdash () : Unit$}
+  \DisplayProof
+  \hskip 1.5em
+  \AxiomC{}
+  \RightLabel{UTLit}
+  \UnaryInfC{$\vdash Unit : Type$}
+  \DisplayProof
+  \\
+  \vskip 1.5em
+  \AxiomC{}
+  \RightLabel{TLit}
+  \UnaryInfC{$\vdash Type : \Box$}
+  \DisplayProof
+
+\end{center}
+
+\subsection*{Variables}
+
+\begin{center}
+
+\AxiomC{}
+\RightLabel{Var}
+\UnaryInfC{$\Gamma, v : t \vdash v : t$}
+\DisplayProof
+
+\end{center}
+
+\pagebreak
+
+\subsection*{Compounds}
+
+\begin{center}
+
+  \AxiomC{$\Gamma \vdash t : Type$}
+  \RightLabel{IsType}
+  \UnaryInfC{$\Gamma \vdash t :^t Type$}
+  \DisplayProof
+  \hskip 1.5em
+  \AxiomC{$\Gamma \vdash t : \Box$}
+  \RightLabel{IsKind}
+  \UnaryInfC{$\Gamma \vdash t :^t \Box$}
+  \DisplayProof
+  \\
+  \vskip 1.5em
+  \AxiomC{$\Gamma \vdash t_{uv} :^t k_{uv}$}
+  \AxiomC{$t_{uv} \Downarrow t_v$}
+  \AxiomC{$\Gamma , t_v : k \vdash e : t_b$}
+  \RightLabel{$\lambda$I}
+  \TrinaryInfC{$\Gamma \vdash (\lambda v : t_{uv}. e) : (\forall v : t_v. t_b)$}
+  \DisplayProof
+  \\
+  \vskip 1.5em
+  \AxiomC{$\Gamma \vdash e_f : (\forall v : t_a. t_b)$}
+  \AxiomC{$\Gamma \vdash e_a : t_a$}
+  \AxiomC{$(\lambda v : t_a. t_b) e_a \Downarrow t_o$}
+  \RightLabel{$\lambda$E}
+  \TrinaryInfC{$\Gamma \vdash e_f \; e_a : t_o$}
+  \DisplayProof
+  \\
+  \vskip 1.5em
+  \AxiomC{$\Gamma \vdash t_{uv} :^t k_v$}
+  \AxiomC{$t_{uv} \Downarrow t_v$}
+  \AxiomC{$\Gamma, v : t_v \vdash t_{ub} :^t k_b$}
+  \RightLabel{$\forall$I}
+  \TrinaryInfC{$\Gamma \vdash (\forall v : t_{uv}. t_{ub}) : k_b$}
+  \DisplayProof
+  \\
+  \vskip 1.5em
+  \AxiomC{$\Gamma \vdash e_p : Bool$}
+  \AxiomC{$\Gamma \vdash e_c : t$}
+  \AxiomC{$\Gamma \vdash e_a : t$}
+  \RightLabel{If}
+  \TrinaryInfC{$\Gamma \vdash (if \; e_p \; then \; e_c \; else \; e_a) : t$}
+  \DisplayProof
+  \\
+  \vskip 1.5em
+  \AxiomC{$\Gamma \vdash e_v : t_v$}
+  \AxiomC{$\Gamma, v : t_v \vdash e_b : t_b$}
+  \RightLabel{Let}
+  \BinaryInfC{$\Gamma \vdash (let \; v \; = \; e_v \; in \; e_b) : t_b$}
+  \DisplayProof
+  \\
+  \vskip 1.5em
+  \AxiomC{$\Gamma \vdash t_{uv} : k$}
+  \AxiomC{$t_{uv} \Downarrow t_v$}
+  \AxiomC{$\Gamma, v : t_v \vdash e_v : t_v$}
+  \AxiomC{$\Gamma, v : t_v \vdash e_b : t_b$}
+  \RightLabel{Letrec}
+  \QuaternaryInfC{$\Gamma \vdash (letrec \; v \; : \; t_{uv} \; = \; e_v \; in \; e_b) : t_b$}
+  \DisplayProof
+  \\
+  \vskip 1.5em
+  \AxiomC{$\Gamma \vdash e_l : t_l$}
+  \AxiomC{$\Gamma \vdash e_r : t_r$}
+  \RightLabel{Pair}
+  \BinaryInfC{$\Gamma \vdash (e_l, e_r) : (t_l \land t_r)$}
+  \DisplayProof
+  \hskip 1.5em
+  \AxiomC{$\Gamma \vdash t_l :^t k$}
+  \AxiomC{$\Gamma \vdash t_r :^t k$}
+  \RightLabel{PairT}
+  \BinaryInfC{$\Gamma \vdash (t_l \land t_r) : k$}
+  \DisplayProof
+  \\
+  \vskip 1.5em
+  \AxiomC{$\Gamma \vdash e : (t_l \land t_r)$}
+  \RightLabel{PairL}
+  \UnaryInfC{$\Gamma \vdash e.L : t_l$}
+  \DisplayProof
+  \hskip 1.5em
+  \AxiomC{$\Gamma \vdash e : (t_l \land t_r)$}
+  \RightLabel{PairR}
+  \UnaryInfC{$\Gamma \vdash e.R : t_r$}
+  \DisplayProof
+  \\
+  \vskip 1.5em
+  \AxiomC{$\Gamma \vdash t_u :^t k$}
+  \AxiomC{$t_u \Downarrow t$}
+  \AxiomC{$\Gamma \vdash e : t$}
+  \RightLabel{Asc}
+  \TrinaryInfC{$\Gamma \vdash (e : t_u) : t$}
+  \DisplayProof
+
+\end{center}
+
+\section*{Normalization}
+
+\begin{center}
+
+\AxiomC{}
+\RightLabel{Lit}
+\UnaryInfC{$l \Downarrow l$}
+\DisplayProof
+\hskip 1.5em
+\AxiomC{}
+\RightLabel{Var}
+\UnaryInfC{$v \Downarrow v$}
+\DisplayProof
+\\
+\vskip 1.5em
+\AxiomC{$t \Downarrow t'$}
+\AxiomC{$e \Downarrow e'$}
+\RightLabel{$\lambda$}
+\BinaryInfC{$\lambda v : t. e \Downarrow \lambda v : t'. e'$}
+\DisplayProof
+\hskip 1.5em
+\AxiomC{$t_v \Downarrow t_v'$}
+\AxiomC{$t_b \Downarrow t_b'$}
+\RightLabel{$\forall$}
+\BinaryInfC{$\forall v : t_v. t_b \Downarrow \forall v : t_v'. t_b'$}
+\DisplayProof
+\\
+\vskip 1.5em
+\AxiomC{$e_f \Downarrow e_f'$}
+\AxiomC{$e_a \Downarrow e_a'$}
+\RightLabel{NeuApp}
+\BinaryInfC{$e_f \; e_a \Downarrow e_f' \; e_a'$}
+\DisplayProof
+\\
+\vskip 1.5em
+\AxiomC{$e_f \Downarrow \lambda v : t. e_b$}
+\AxiomC{$e_b [e_a / v] \Downarrow e_b'$}
+\RightLabel{$\beta$}
+\BinaryInfC{$e_f \; e_a \Downarrow e_b'$}
+\DisplayProof
+\\
+\vskip 1.5em
+\AxiomC{$e_p \Downarrow e_p'$}
+\AxiomC{$e_c \Downarrow e_c'$}
+\AxiomC{$e_a \Downarrow e_a'$}
+\RightLabel{NeuIf}
+\TrinaryInfC{$if \; e_p \; then \; e_c \; else \; e_a \Downarrow if \; e_p' \; then \; e_c' \; else \; e_a'$}
+\DisplayProof
+\\
+\vskip 1.5em
+\AxiomC{$e_p \Downarrow true$}
+\AxiomC{$e_c \Downarrow e_c'$}
+\RightLabel{IfT}
+\BinaryInfC{$if \; e_p \; then \; e_c \; else \; e_a \Downarrow e_c'$}
+\DisplayProof
+\hskip 1.5em
+\AxiomC{$e_p \Downarrow false$}
+\AxiomC{$e_a \Downarrow e_a'$}
+\RightLabel{IfF}
+\BinaryInfC{$if \; e_p \; then \; e_c \; else \; e_a \Downarrow e_a'$}
+\DisplayProof
+\\
+\vskip 1.5em
+\AxiomC{$e_b[e_v / v] \Downarrow e_b'$}
+\RightLabel{Let}
+\UnaryInfC{$let \; v \; = \; e_v \; in \; e_b \Downarrow e_b'$}
+\DisplayProof
+\\
+\vskip 1.5em
+\AxiomC{$e_b[e_v / v] \Downarrow e_b'$}
+\RightLabel{Letrec}
+\UnaryInfC{$let \; v \; = \; e_v \; in \; e_b \Downarrow e_b'$}
+\DisplayProof
+\\
+\vskip 1.5em
+\AxiomC{$e_l \Downarrow e_l'$}
+\AxiomC{$e_r \Downarrow e_r'$}
+\RightLabel{Pair}
+\BinaryInfC{$(e_l, e_r) \Downarrow (e_l', e_r')$}
+\DisplayProof
+\hskip 1.5em
+\AxiomC{$t_l \Downarrow t_l'$}
+\AxiomC{$t_r \Downarrow t_r'$}
+\RightLabel{PairT}
+\BinaryInfC{$(t_l \land t_r) \Downarrow (t_l' \land t_r')$}
+\DisplayProof
+\\
+\vskip 1.5em
+\AxiomC{$e \Downarrow e'$}
+\RightLabel{NeuPairL}
+\UnaryInfC{$e.L \Downarrow e'.L$}
+\DisplayProof
+\hskip 1.5em
+\AxiomC{$e \Downarrow (e_l, e_r)$}
+\RightLabel{PairL}
+\UnaryInfC{$e.L \Downarrow e_l$}
+\DisplayProof
+\\
+\vskip 1.5em
+\AxiomC{$e \Downarrow e'$}
+\RightLabel{NeuPairR}
+\UnaryInfC{$e.R \Downarrow e'.R$}
+\DisplayProof
+\hskip 1.5em
+\AxiomC{$e \Downarrow (e_l, e_r)$}
+\RightLabel{PairR}
+\UnaryInfC{$e.R \Downarrow e_r$}
+\DisplayProof
+\\
+\vskip 1.5em
+\AxiomC{$e \Downarrow e'$}
+\RightLabel{Asc}
+\UnaryInfC{$(e : t) \Downarrow e'$}
+\DisplayProof
+
+\end{center}
+
+\end{document}
