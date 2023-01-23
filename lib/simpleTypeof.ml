@@ -27,9 +27,7 @@ end) (N : Normalizer with type env = Env.t) (Eq : AlphaEquivChecker) = struct
 		in let a_t = typeof env a
 		in if Eq.alpha_equiv c_t a_t
 		then c_t
-		else
-			let bv = gen_ident "bv"
-			in N.normalize env (App (Lam (bv, BoolT, If (Var (bv, BoolT), c_t, a_t)), p))
+		else N.normalize env (If (p, c_t, a_t))
 	| Ann (_, t) -> t
 	| Pair (l, r) -> PairT (typeof env l, typeof env r)
 	| PairT (l, _) -> typeof env l

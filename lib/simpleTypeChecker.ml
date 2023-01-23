@@ -76,9 +76,7 @@ end) (N : Normalizer with type env = Env.t) (PP : PrettyPrinter) (Eq : AlphaEqui
 		in let* (c_a, a_t) = synth_type env a
 		in if alpha_equiv c_t a_t
 		then Ok (If (c_p, c_c, c_a), c_t)
-		else
-			let bv = gen_ident "bv"
-			in Ok (If (c_p, c_c, c_a), N.normalize env (App (Lam (bv, BoolT, If (Var (bv, BoolT), c_t, a_t)), c_p)))
+		else Ok (If (c_p, c_c, c_a), N.normalize env (If (c_p, c_t, a_t)))
 	| Ann (t, t_t) ->
 		let* (c_t_t, _) = synth_type_type env t_t
 		in let* c_t = check_type env c_t_t t
