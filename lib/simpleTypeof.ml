@@ -3,7 +3,7 @@ open ModuleTypes
 
 module Make (Env : sig
 	type t
-end) (N : Normalizer with type env = Env.t) = struct
+end) (N : Normalizer with type env = Env.t) (Eq : AlphaEquivChecker) = struct
 	type env = Env.t
 
 	let rec typeof env = function
@@ -22,7 +22,14 @@ end) (N : Normalizer with type env = Env.t) = struct
 		| Pi (v, v_t, b) -> N.normalize env (App(Lam(v, v_t, b), a))
 		| _ -> assert false
 		end
-	| If (_, c, _) -> typeof env c
+	| If (p, c, a) ->
+		let c_t = typeof env c
+		in let a_t = typeof env a
+		in if Eq.alpha_equiv c_t a_t
+		then c_t
+		else
+			let bv = gen_ident "bv"
+			in N.normalize env (App (Lam (bv, BoolT, If (Var (bv, BoolT), c_t, a_t)), p))
 	| Ann (_, t) -> t
 	| Pair (l, r) -> PairT (typeof env l, typeof env r)
 	| PairT (l, _) -> typeof env l

@@ -23,7 +23,7 @@ and SimpleNormalizerEnv : Evaluator
 	= SimpleNormalizer.Make (SimpleEnv)
 and SimpleTypeofEnv : Typeof
 	with type env = SimpleNormalizer.value_t Env.env_t
-	= SimpleTypeof.Make (SimpleEnv) (SimpleNormalizerEnv)
+	= SimpleTypeof.Make (SimpleEnv) (SimpleNormalizerEnv) (SimpleAlphaEquivChecker)
 
 module SimpleUniquifierEnv = SimpleUniquifier.Make (SimpleEnv)
 module SimpleTypeCheckerEnv = SimpleTypeChecker.Make (SimpleEnv) (SimpleNormalizerEnv) (SimplePrettyPrinter) (SimpleAlphaEquivChecker)
